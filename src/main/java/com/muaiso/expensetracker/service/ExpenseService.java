@@ -22,8 +22,11 @@ public class ExpenseService {
         this.repository = repository;
     }
 
-    public PageResponse<ExpenseResponse> findPaged(int page, int size) {
-        var pageable = org.springframework.data.domain.PageRequest.of(page, size);
+    public PageResponse<ExpenseResponse> findPaged(int page, int size, String sort) {
+        var direction = org.springframework.data.domain.Sort.Direction.fromString(
+                sort == null ? "DESC" : sort.toUpperCase());
+        var pageable = org.springframework.data.domain.PageRequest.of(
+                page, size, org.springframework.data.domain.Sort.by(direction, "date"));
         return PageResponse.from(repository.findAll(pageable)
                 .map(ExpenseResponse::from));
     }

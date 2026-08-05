@@ -41,7 +41,8 @@ public class ExpenseController {
             @RequestParam(value = "to", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "20") int size) {
+            @RequestParam(value = "size", defaultValue = "20") int size,
+            @RequestParam(value = "sort", defaultValue = "DESC") String sort) {
 
         if (category != null) {
             return new PageResponse<>(service.findByCategory(category), 0, size, service.findByCategory(category).size(), 1);
@@ -50,7 +51,7 @@ public class ExpenseController {
             var range = service.findByDateBetween(from, to);
             return new PageResponse<>(range, 0, size, range.size(), 1);
         }
-        return service.findPaged(page, size);
+        return service.findPaged(page, size, sort);
     }
 
     @GetMapping("/{id}")
