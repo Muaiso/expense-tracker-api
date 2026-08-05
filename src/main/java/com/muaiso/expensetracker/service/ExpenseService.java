@@ -21,10 +21,10 @@ public class ExpenseService {
         this.repository = repository;
     }
 
-    public List<ExpenseResponse> findAll() {
-        return repository.findAll().stream()
-                .map(ExpenseResponse::from)
-                .toList();
+    public PageResponse<ExpenseResponse> findPaged(int page, int size) {
+        var pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return PageResponse.from(repository.findAll(pageable)
+                .map(ExpenseResponse::from));
     }
 
     public List<ExpenseResponse> findByCategory(String category) {
