@@ -1,0 +1,21 @@
+# Ignore Gradle cache and build artifacts
+.gradle/
+build/
+bin/
+
+# Ignore local env and IDE files
+.env
+.idea/
+*.iml
+*.iws
+out/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Keep the wrapper jar and scripts tracked
+!gradle/wrapper/gradle-wrapper.jar
+!gradlew
+!gradlew.bat
