@@ -3,6 +3,7 @@ package com.muaiso.expensetracker.service;
 import com.muaiso.expensetracker.dto.ExpenseRequest;
 import com.muaiso.expensetracker.dto.ExpenseResponse;
 import com.muaiso.expensetracker.dto.ExpenseSummary;
+import com.muaiso.expensetracker.dto.PageResponse;
 import com.muaiso.expensetracker.model.Expense;
 import com.muaiso.expensetracker.repository.ExpenseRepository;
 import java.math.BigDecimal;
