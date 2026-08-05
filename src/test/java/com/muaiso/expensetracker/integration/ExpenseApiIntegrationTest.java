@@ -56,10 +56,11 @@ class ExpenseApiIntegrationTest {
         ExpenseResponse a = create("Lunch", "10.50", "Food");
         ExpenseResponse b = create("Bus", "4.00", "Transport");
 
-        // GET all
-        ResponseEntity<ExpenseResponse[]> all = rest.getForEntity(baseUrl(), ExpenseResponse[].class);
+        // GET all (paginated)
+        ResponseEntity<Map> all = rest.getForEntity(baseUrl(), Map.class);
         assertThat(all.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(all.getBody()).hasSize(2);
+        assertThat((List<?>) all.getBody().get("content")).hasSize(2);
+        assertThat(all.getBody().get("totalElements")).isEqualTo(2);
 
         // GET one
         ResponseEntity<ExpenseResponse> one = rest.getForEntity(
