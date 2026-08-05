@@ -4,6 +4,7 @@ import com.muaiso.expensetracker.dto.ExpenseRequest;
 import com.muaiso.expensetracker.dto.ExpenseResponse;
 import com.muaiso.expensetracker.dto.ExpenseSummary;
 import com.muaiso.expensetracker.service.ExpenseService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Expenses", description = "CRUD und Aggregation von Ausgaben")
 @RestController
 @RequestMapping("/api/expenses")
 public class ExpenseController {
