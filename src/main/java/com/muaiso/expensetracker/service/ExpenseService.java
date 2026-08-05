@@ -1,5 +1,7 @@
 package com.muaiso.expensetracker.service;
 
+import com.muaiso.expensetracker.dto.ExpenseRequest;
+import com.muaiso.expensetracker.dto.ExpenseResponse;
 import com.muaiso.expensetracker.dto.ExpenseSummary;
 import com.muaiso.expensetracker.model.Expense;
 import com.muaiso.expensetracker.repository.ExpenseRepository;
@@ -18,26 +20,28 @@ public class ExpenseService {
         this.repository = repository;
     }
 
-    public List<Expense> findAll() {
-        return repository.findAll();
+    public List<ExpenseResponse> findAll() {
+        return repository.findAll().stream()
+                .map(ExpenseResponse::from)
+                .toList();
     }
 
-    public Expense findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ExpenseNotFoundException(id));
+    public ExpenseResponse findById(Long id) {
+        return ExpenseResponse.from(findEntity(id));
     }
 
-    public Expense create(Expense expense) {
-        return repository.save(expense);
+    public ExpenseResponse create(ExpenseRequest request) {
+        Expense entity = toEntity(request);
+        return ExpenseResponse.from(repository.save(entity));
     }
 
-    public Expense update(Long id, Expense updated) {
-        Expense existing = findById(id);
-        existing.setDescription(updated.getDescription());
-        existing.setAmount(updated.getAmount());
-        existing.setCategory(updated.getCategory());
-        existing.setDate(updated.getDate());
-        return repository.save(existing);
+    public ExpenseResponse update(Long id, ExpenseRequest request) {
+        Expense existing = findEntity(id);
+        existing.setDescription(request.description());
+        existing.setAmount(request.amount());
+        existing.setCategory(request.category());
+        existing.setDate(request.date());
+        return ExpenseResponse.from(repository.save(existing));
     }
 
     public void delete(Long id) {
@@ -65,5 +69,15 @@ public class ExpenseService {
                                 Expense::getAmount,
                                 BigDecimal::add)));
         return new ExpenseSummary(total, byCategory, all.size());
+    }
+
+    private Expense findEntity(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ExpenseNotFoundException(id));
+    }
+
+    private Expense toEntity(ExpenseRequest request) {
+        return new Expense(
+                request.description(), request.amount(), request.category(), request.date());
     }
 }
