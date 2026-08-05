@@ -1,7 +1,8 @@
 package com.muaiso.expensetracker.controller;
 
+import com.muaiso.expensetracker.dto.ExpenseRequest;
+import com.muaiso.expensetracker.dto.ExpenseResponse;
 import com.muaiso.expensetracker.dto.ExpenseSummary;
-import com.muaiso.expensetracker.model.Expense;
 import com.muaiso.expensetracker.service.ExpenseService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -27,24 +28,24 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public List<Expense> all() {
+    public List<ExpenseResponse> all() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public Expense one(@PathVariable Long id) {
+    public ExpenseResponse one(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Expense create(@Valid @RequestBody Expense expense) {
-        return service.create(expense);
+    public ExpenseResponse create(@Valid @RequestBody ExpenseRequest request) {
+        return service.create(request);
     }
 
     @PutMapping("/{id}")
-    public Expense update(@PathVariable Long id, @Valid @RequestBody Expense expense) {
-        return service.update(id, expense);
+    public ExpenseResponse update(@PathVariable Long id, @Valid @RequestBody ExpenseRequest request) {
+        return service.update(id, request);
     }
 
     @DeleteMapping("/{id}")
