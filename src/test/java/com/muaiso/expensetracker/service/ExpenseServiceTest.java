@@ -100,6 +100,30 @@ class ExpenseServiceTest {
     }
 
     @Test
+    void findByCategoryFiltersEntities() {
+        when(repository.findByCategory("Food")).thenReturn(
+                List.of(entity(1L, "Lunch", "10.00", "Food"), entity(2L, "Dinner", "5.00", "Food")));
+
+        var result = service.findByCategory("Food");
+
+        assertThat(result).hasSize(2);
+        assertThat(result).allMatch(r -> r.category().equals("Food"));
+    }
+
+    @Test
+    void findByDateBetweenFiltersEntities() {
+        LocalDate start = LocalDate.of(2026, 8, 1);
+        LocalDate end = LocalDate.of(2026, 8, 31);
+        when(repository.findByDateBetween(start, end)).thenReturn(
+                List.of(entity(1L, "Lunch", "10.00", "Food")));
+
+        var result = service.findByDateBetween(start, end);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).description()).isEqualTo("Lunch");
+    }
+
+    @Test
     void summarizeComputesTotalAndGroupsByCategory() {
         Expense food = entity(1L, "Lunch", "10.00", "Food");
         Expense food2 = entity(2L, "Dinner", "5.00", "Food");
