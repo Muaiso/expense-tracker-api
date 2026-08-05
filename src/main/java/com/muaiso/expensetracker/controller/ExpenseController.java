@@ -3,6 +3,7 @@ package com.muaiso.expensetracker.controller;
 import com.muaiso.expensetracker.dto.ExpenseRequest;
 import com.muaiso.expensetracker.dto.ExpenseResponse;
 import com.muaiso.expensetracker.dto.ExpenseSummary;
+import com.muaiso.expensetracker.dto.PageResponse;
 import com.muaiso.expensetracker.service.ExpenseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -33,20 +34,23 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public List<ExpenseResponse> all(
+    public PageResponse<ExpenseResponse> all(
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "from", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(value = "to", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size) {
 
         if (category != null) {
-            return service.findByCategory(category);
+            return new PageResponse<>(service.findByCategory(category), 0, size, service.findByCategory(category).size(), 1);
         }
         if (from != null && to != null) {
-            return service.findByDateBetween(from, to);
+            var range = service.findByDateBetween(from, to);
+            return new PageResponse<>(range, 0, size, range.size(), 1);
         }
-        return service.findAll();
+        return service.findPaged(page, size);
     }
 
     @GetMapping("/{id}")
