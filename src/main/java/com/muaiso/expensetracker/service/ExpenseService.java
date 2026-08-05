@@ -6,6 +6,7 @@ import com.muaiso.expensetracker.dto.ExpenseSummary;
 import com.muaiso.expensetracker.model.Expense;
 import com.muaiso.expensetracker.repository.ExpenseRepository;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +23,18 @@ public class ExpenseService {
 
     public List<ExpenseResponse> findAll() {
         return repository.findAll().stream()
+                .map(ExpenseResponse::from)
+                .toList();
+    }
+
+    public List<ExpenseResponse> findByCategory(String category) {
+        return repository.findByCategory(category).stream()
+                .map(ExpenseResponse::from)
+                .toList();
+    }
+
+    public List<ExpenseResponse> findByDateBetween(LocalDate start, LocalDate end) {
+        return repository.findByDateBetween(start, end).stream()
                 .map(ExpenseResponse::from)
                 .toList();
     }
