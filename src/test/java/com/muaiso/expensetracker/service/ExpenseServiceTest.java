@@ -7,6 +7,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.muaiso.expensetracker.dto.ExpenseRequest;
+import com.muaiso.expensetracker.dto.ExpenseResponse;
 import com.muaiso.expensetracker.dto.ExpenseSummary;
 import com.muaiso.expensetracker.model.Expense;
 import com.muaiso.expensetracker.repository.ExpenseRepository;
@@ -29,27 +31,33 @@ class ExpenseServiceTest {
     @InjectMocks
     private ExpenseService service;
 
-    private Expense sample(String description, String amount, String category) {
-        return new Expense(description, new BigDecimal(amount), category, LocalDate.of(2026, 8, 1));
+    private ExpenseRequest request(String description, String amount, String category) {
+        return new ExpenseRequest(description, new BigDecimal(amount), category, LocalDate.of(2026, 8, 1));
+    }
+
+    private Expense entity(Long id, String description, String amount, String category) {
+        Expense e = new Expense(description, new BigDecimal(amount), category, LocalDate.of(2026, 8, 1));
+        e.setId(id);
+        return e;
     }
 
     @Test
-    void createDelegatesToRepository() {
-        Expense input = sample("Lunch", "10.00", "Food");
-        when(repository.save(any(Expense.class))).thenReturn(input);
+    void createReturnsResponseFromSavedEntity() {
+        Expense saved = entity(1L, "Lunch", "10.00", "Food");
+        when(repository.save(any(Expense.class))).thenReturn(saved);
 
-        Expense result = service.create(input);
+        ExpenseResponse result = service.create(request("Lunch", "10.00", "Food"));
 
-        assertThat(result.getDescription()).isEqualTo("Lunch");
-        verify(repository).save(input);
+        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.description()).isEqualTo("Lunch");
+        verify(repository).save(any(Expense.class));
     }
 
     @Test
-    void findByIdReturnsEntityWhenPresent() {
-        Expense e = sample("Bus", "5.00", "Transport");
-        when(repository.findById(1L)).thenReturn(Optional.of(e));
+    void findByIdReturnsResponseWhenPresent() {
+        when(repository.findById(1L)).thenReturn(Optional.of(entity(1L, "Bus", "5.00", "Transport")));
 
-        assertThat(service.findById(1L)).isEqualTo(e);
+        assertThat(service.findById(1L).description()).isEqualTo("Bus");
     }
 
     @Test
@@ -62,16 +70,15 @@ class ExpenseServiceTest {
 
     @Test
     void updateAppliesChangesToExistingEntity() {
-        Expense existing = sample("Alt", "1.00", "Sonstiges");
-        Expense update = sample("Neu", "9.99", "Food");
+        Expense existing = entity(1L, "Alt", "1.00", "Sonstiges");
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
         when(repository.save(any(Expense.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Expense result = service.update(1L, update);
+        ExpenseResponse result = service.update(1L, request("Neu", "9.99", "Food"));
 
-        assertThat(result.getDescription()).isEqualTo("Neu");
-        assertThat(result.getAmount()).isEqualByComparingTo("9.99");
-        assertThat(result.getCategory()).isEqualTo("Food");
+        assertThat(result.description()).isEqualTo("Neu");
+        assertThat(result.amount()).isEqualByComparingTo("9.99");
+        assertThat(result.category()).isEqualTo("Food");
     }
 
     @Test
@@ -94,9 +101,9 @@ class ExpenseServiceTest {
 
     @Test
     void summarizeComputesTotalAndGroupsByCategory() {
-        Expense food = sample("Lunch", "10.00", "Food");
-        Expense food2 = sample("Dinner", "5.00", "Food");
-        Expense transport = sample("Bus", "5.00", "Transport");
+        Expense food = entity(1L, "Lunch", "10.00", "Food");
+        Expense food2 = entity(2L, "Dinner", "5.00", "Food");
+        Expense transport = entity(3L, "Bus", "5.00", "Transport");
         when(repository.findAll()).thenReturn(List.of(food, food2, transport));
 
         ExpenseSummary summary = service.summarize();
