@@ -3,7 +3,7 @@
 Alle wesentlichen Aenderungen an diesem Projekt werden in dieser Datei dokumentiert.
 Das Format lehnt sich an [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [0.1.0]
 
 ### Hinzugefügt
 - CRUD-Endpunkte fuer Ausgaben (`/api/expenses`)
@@ -19,5 +19,5 @@ Das Format lehnt sich an [Keep a Changelog](https://keepachangelog.com/).
 - Statistik-Endpunkte (`/api/stats/monthly`, `/api/stats/current-month`)
 - CORS-Konfiguration fuer lokales Frontend (Port 3000)
 - Dockerfile (Multi-Stage) + docker-compose
-- GitHub Actions CI-Workflow
+- GitHub Actions CI-Workflow + Dependabot
 - Tests: Unit (Mockito), MockMvc, Integration (`@SpringBootTest`), Actuator, Statistik
